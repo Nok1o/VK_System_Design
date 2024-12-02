@@ -1,0 +1,58 @@
+openapi: 3.0.1
+info:
+  title: Steam API
+  description: ƒокументаци€ дл€ API Steam дл€ открыти€ ссылок и показа меню
+  version: 1.0.0
+
+servers:
+  - url: https://api.steampowered.com
+
+paths:
+  /api/steam/link:
+    post:
+      summary: "ќткрыть ссылку в новом окне или через Steam"
+      description: "ќткрывает ссылку в новом окне или через Steam, в зависимости от того, находитс€ ли пользователь в Steam-клиенте"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  description: "URL дл€ открыти€"
+      responses:
+        '200':
+          description: "—сылка успешно открыта"
+        '400':
+          description: "ќшибка при открытии ссылки"
+
+  /api/menu/show:
+    post:
+      summary: "ѕоказать меню"
+      description: "ѕоказывает меню в зависимости от позиции и других параметров"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                link_id:
+                  type: string
+                  description: "ID элемента, на который нажали дл€ отображени€ меню"
+                popup_id:
+                  type: string
+                  description: "ID всплывающего окна меню"
+                align:
+                  type: string
+                  description: "√оризонтальное выравнивание меню"
+                valign:
+                  type: string
+                  description: "¬ертикальное выравнивание меню"
+      responses:
+        '200':
+          description: "ћеню успешно показано"
+        '400':
+          description: "ќшибка при показе меню"

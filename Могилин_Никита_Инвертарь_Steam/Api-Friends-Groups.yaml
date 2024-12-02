@@ -1,0 +1,52 @@
+openapi: 3.0.1
+info:
+  title: Steam Chat API
+  description: API для открытия чатов с друзьями и группами в зависимости от контекста пользователя.
+  version: 1.0.0
+
+servers:
+  - url: https://api.steampowered.com
+
+paths:
+  /api/chat/friend:
+    post:
+      summary: "Открыть чат с другом"
+      description: "Открывает чат с другом в зависимости от контекста пользователя (клиент, мобильное приложение, веб-чат)"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                steamid:
+                  type: string
+                  description: "Steam ID друга"
+                accountid:
+                  type: string
+                  description: "Account ID друга"
+      responses:
+        '200':
+          description: "Чат с другом успешно открыт"
+        '400':
+          description: "Ошибка при открытии чата с другом"
+
+  /api/chat/group:
+    post:
+      summary: "Открыть групповой чат"
+      description: "Открывает групповой чат в зависимости от контекста пользователя (клиент, мобильное приложение, веб-чат)"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                steamid:
+                  type: string
+                  description: "Steam ID группы"
+      responses:
+        '200':
+          description: "Групповой чат успешно открыт"
+        '400':
+          description: "Ошибка при открытии группового чата"

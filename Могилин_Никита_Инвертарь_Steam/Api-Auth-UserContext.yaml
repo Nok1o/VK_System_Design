@@ -1,0 +1,108 @@
+openapi: 3.0.1
+info:
+  title: Steam API
+  description: Документация для API Steam, включая авторизацию и дополнительные функции.
+  version: 1.0.0
+
+servers:
+  - url: https://api.steampowered.com
+
+paths:
+  /api/auth/login:
+    post:
+      summary: "Авторизация пользователя"
+      description: "Процесс авторизации пользователя с использованием OAuth2."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: "Имя пользователя"
+                password:
+                  type: string
+                  description: "Пароль пользователя"
+      responses:
+        '200':
+          description: "Успешная авторизация"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    description: "OAuth2 токен для авторизации"
+        '400':
+          description: "Неверные данные для авторизации"
+          
+  /api/steam/webapi:
+    post:
+      summary: "Взаимодействие с WebAPI Steam"
+      description: "Позволяет отправлять запросы в WebAPI Steam с использованием OAuth2 токена"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                access_token:
+                  type: string
+                  description: "OAuth2 токен для авторизации"
+                interface:
+                  type: string
+                  description: "Интерфейс WebAPI"
+                method:
+                  type: string
+                  description: "Метод для выполнения"
+                params:
+                  type: object
+                  description: "Параметры для метода"
+      responses:
+        '200':
+          description: "Успешный ответ от WebAPI"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: "Успех запроса"
+                  data:
+                    type: object
+                    description: "Ответные данные от WebAPI"
+        '400':
+          description: "Ошибка при выполнении запроса"
+
+  /api/user/context:
+    get:
+      summary: "Получить информацию о текущем контексте пользователя"
+      description: "Возвращает информацию о том, в каком контексте работает пользователь (Steam клиент, игра, мобильное приложение и т. д.)"
+      responses:
+        '200':
+          description: "Информация о контексте пользователя"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  inSteamClient:
+                    type: boolean
+                    description: "Пользователь в Steam клиенте"
+                  inGameOverlay:
+                    type: boolean
+                    description: "Пользователь в оверлей-режиме игры"
+                  inSteamTenfootBrowser:
+                    type: boolean
+                    description: "Пользователь в 10-футовом браузере Steam"
+                  inMobileChat:
+                    type: boolean
+                    description: "Пользователь в мобильном чате Steam"
+                  inMobileApp:
+                    type: boolean
+                    description: "Пользователь в мобильном приложении Steam"

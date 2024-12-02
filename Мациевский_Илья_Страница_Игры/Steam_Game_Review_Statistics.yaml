@@ -1,0 +1,170 @@
+openapi: 3.0.0
+info:
+  title: Steam Game Review Statistics API
+  version: 1.0.0
+  description: >
+    Этот API предоставляет статистику отзывов для конкретной игры Steam, с разбивкой по неделям, включая количество положительных и отрицательных рекомендаций.
+servers:
+  - url: https://api.steampowered.com
+paths:
+  /730:  # Путь к API для получения статистики отзывов по игре с ID 730
+    get:
+      summary: Получить статистику отзывов для игры Steam
+      description: >
+        Получает статистику отзывов (положительные и отрицательные рекомендации) для конкретной игры за указанный период времени, разбитую по неделям.
+      parameters:
+        - name: l  # Параметр языка
+          in: query  # Параметр передается в строке запроса
+          description: Предпочтительный язык для отзывов (например, "russian").
+          required: true  # Параметр обязателен
+          schema:
+            type: string
+            enum:
+              - russian
+              - english
+              - other
+        - name: review_score_preference  # Параметр для фильтрации по оценке отзыва
+          in: query
+          description: Фильтр по оценкам отзыва (например, 0 для всех, 1 для положительных).
+          required: true
+          schema:
+            type: integer
+            enum:
+              - 0  # Все отзывы
+              - 1  # Только положительные
+              - -1  # Только отрицательные
+        - name: start_date
+          in: query
+          description: Начальная дата для статистики отзывов (необязательно).
+          required: false
+          schema:
+            type: integer
+            format: int64  # Формат Unix timestamp
+        - name: end_date
+          in: query
+          description: Конечная дата для статистики отзывов (опционально). Если не указана, используется самая последняя доступная дата.
+          required: false
+          schema:
+            type: integer
+            format: int64  # Формат Unix timestamp
+      responses:
+        '200':  #успешный запрос
+          description: Успешный ответ с данными статистики отзывов.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: integer
+                    description: Указывает, был ли запрос успешным (1 — успешный).
+                  results:
+                    type: object
+                    properties:
+                      start_date:
+                        type: integer
+                        description: Unix timestamp начала периода статистики.
+                      end_date:
+                        type: integer
+                        description: Unix timestamp конца периода статистики.
+                      weeks:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            date:
+                              type: integer
+                              description: Unix timestamp начала недели.
+                            recommendations_up:
+                              type: integer
+                              description: Количество положительных рекомендаций (upvotes) за неделю.
+                            recommendations_down:
+                              type: integer
+                              description: Количество отрицательных рекомендаций (downvotes) за неделю.
+                      rollups:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            date:
+                              type: integer
+                              description: Unix timestamp для конкретной даты отзыва.
+                            recommendations_up:
+                              type: integer
+                              description: Количество положительных рекомендаций (upvotes) в этот день.
+                            recommendations_down:
+                              type: integer
+                              description: Количество отрицательных рекомендаций (downvotes) в этот день.
+                      count_all_reviews:
+                        type: boolean
+                        description: Указывает, учитываются ли все отзывы.
+                      expand_graph:
+                        type: boolean
+                        description: Указывает, нужно ли расширить график.
+                example:  #успешный ответа
+                  success: 1
+                  results:
+                    start_date: 1336780800
+                    end_date: 1733097600
+                    weeks: []
+                    rollups:
+                      - date: 1335830400
+                        recommendations_up: 1
+                        recommendations_down: 0
+                      - date: 1343779200
+                        recommendations_up: 1630
+                        recommendations_down: 208
+                      - date: 1346457600
+                        recommendations_up: 1003
+                        recommendations_down: 88
+                      - date: 1349049600
+                        recommendations_up: 511
+                        recommendations_down: 59
+                    count_all_reviews: true
+                    expand_graph: false
+        '400':  # неверные параметры запроса
+          description: Неверный запрос, отсутствуют или некорректные параметры.
+        '500':  # внутренняя ошибка сервера
+          description: Внутренняя ошибка сервера, непредвиденная проблема.
+        '404':  # данные не найдены
+          description: Данные не найдены для указанной игры или некорректные параметры запроса.
+components:
+  schemas:
+    # Схема для данных о рекомендациях
+    ReviewData:
+      type: object
+      properties:
+        date:
+          type: integer
+          description: Unix timestamp для конкретной даты отзыва.
+        recommendations_up:
+          type: integer
+          description: Количество положительных рекомендаций (upvotes).
+        recommendations_down:
+          type: integer
+          description: Количество отрицательных рекомендаций (downvotes).
+    # Схема для статистики отзывов
+    ReviewStatistics:
+      type: object
+      properties:
+        success:
+          type: integer
+        results:
+          type: object
+          properties:
+            start_date:
+              type: integer
+            end_date:
+              type: integer
+            weeks:
+              type: array
+              items:
+                $ref: '#/components/schemas/ReviewData'  # Использование схемы ReviewData
+            rollups:
+              type: array
+              items:
+                $ref: '#/components/schemas/ReviewData'
+            count_all_reviews:
+              type: boolean
+            expand_graph:
+              type: boolean

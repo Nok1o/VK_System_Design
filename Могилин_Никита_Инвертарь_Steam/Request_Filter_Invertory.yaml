@@ -1,0 +1,205 @@
+openapi: 3.0.1
+info:
+  title: Steam Inventory API
+  description: API для работы с инвентарем пользователей Steam.
+  version: 1.0.0
+  contact:
+    name: Steam Support
+    email: support@steam.com
+    url: https://store.steampowered.com/
+servers:
+  - url: https://api.steampowered.com
+    description: Основной сервер Steam API
+
+paths:
+  /inventory/{appid}/{contextid}:
+    get:
+      summary: "Получить инвентарь по appid и contextid"
+      parameters:
+        - name: appid
+          in: path
+          required: true
+          description: "ID приложения"
+          schema:
+            type: integer
+        - name: contextid
+          in: path
+          required: true
+          description: "ID контекста"
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: "Успешный ответ"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory'
+              examples:
+                example:
+                  value:
+                    appid: 753
+                    contextid: 2
+                    items:
+                      - assetid: 12345
+                        name: "Rare Item"
+                        tradable: true
+                        marketable: false
+                        image: "https://example.com/item12345.jpg"
+                    tags:
+                      - name: "Tradable"
+                        internal_name: "tradable"
+                        category: "misc"
+                      - name: "Unmarketable"
+                        internal_name: "unmarketable"
+                        category: "misc"
+
+  /inventory/{appid}/{contextid}/filter:
+    post:
+      summary: "Применить фильтры к инвентарю"
+      parameters:
+        - name: appid
+          in: path
+          required: true
+          description: "ID приложения"
+          schema:
+            type: integer
+        - name: contextid
+          in: path
+          required: true
+          description: "ID контекста"
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Filter'
+      responses:
+        '200':
+          description: "Инвентарь после применения фильтров"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory'
+              examples:
+                example:
+                  value:
+                    appid: 753
+                    contextid: 2
+                    items:
+                      - assetid: 12345
+                        name: "Filtered Item"
+                        tradable: true
+                        marketable: true
+                        image: "https://example.com/item12345.jpg"
+                    tags:
+                      - name: "Tradable"
+                        internal_name: "tradable"
+                        category: "misc"
+                      - name: "Marketable"
+                        internal_name: "marketable"
+                        category: "misc"
+
+  /inventory/{appid}/{contextid}/hash:
+    get:
+      summary: "Получить инвентарь по хеш-параметрам"
+      parameters:
+        - name: appid
+          in: path
+          required: true
+          description: "ID приложения"
+          schema:
+            type: integer
+        - name: contextid
+          in: path
+          required: true
+          description: "ID контекста"
+          schema:
+            type: integer
+        - name: hash
+          in: query
+          required: false
+          description: "Параметры инвентаря в URL хеш-формате"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Инвентарь по хеш-параметрам"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory'
+
+components:
+  schemas:
+    Inventory:
+      type: object
+      properties:
+        appid:
+          type: integer
+          description: "ID приложения"
+        contextid:
+          type: integer
+          description: "ID контекста"
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Item'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+
+    Item:
+      type: object
+      properties:
+        assetid:
+          type: integer
+          description: "ID товара"
+        name:
+          type: string
+          description: "Название товара"
+        tradable:
+          type: boolean
+          description: "Можно ли обменивать"
+        marketable:
+          type: boolean
+          description: "Можно ли продавать"
+        image:
+          type: string
+          description: "URL изображения товара"
+
+    Tag:
+      type: object
+      properties:
+        name:
+          type: string
+          description: "Название тега"
+        internal_name:
+          type: string
+          description: "Внутреннее название тега"
+        category:
+          type: string
+          description: "Категория тега"
+
+    Filter:
+      type: object
+      properties:
+        tradable:
+          type: boolean
+          description: "Фильтровать по доступности для обмена"
+        marketable:
+          type: boolean
+          description: "Фильтровать по доступности для продажи"
+
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: "Код ошибки"
+        message:
+          type: string
+          description: "Сообщение об ошибке"

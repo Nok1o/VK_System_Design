@@ -1,0 +1,107 @@
+openapi: 3.0.0
+info:
+  title: Steam Recommendation Votes API
+  version: 1.0.0
+  description: >
+    Этот API позволяет получить информацию о голосах пользователей для различных рекомендаций в Steam. Ответ включает информацию о том, как пользователи проголосовали за каждый отзыв.
+servers:
+  - url: https://api.steampowered.com
+paths:
+  /ajaxgetvotes:
+    get:
+      summary: Получить голоса пользователей для рекомендаций
+      description: >
+        Получает список голосов пользователей для различных рекомендаций на Steam. В ответе содержатся данные о том, как пользователи проголосовали (положительно, отрицательно, как "funny" или пожаловался).
+      parameters:
+        - name: recommendation_ids  # Параметр для списка ID рекомендаций
+          in: query  # Параметр передается в строке запроса
+          description: Список ID рекомендаций для которых нужно получить голоса. Можно передать несколько ID через запятую.
+          required: true
+          schema:
+            type: string
+        - name: user_id
+          in: query  # Параметр передается в строке запроса
+          description: Идентификатор пользователя, для которого нужно получить голоса.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':  #успешный запрос
+          description: Успешный ответ с данными голосов рекомендаций.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: integer
+                    description: Параметр, указывающий успешность запроса (1 — успешный).
+                  votes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        recommendationid:
+                          type: string
+                          description: Уникальный идентификатор рекомендации.
+                        voted_up:
+                          type: integer
+                          description: Флаг, показывающий, был ли голос пользователя положительным (1) или нет (0).
+                        voted_down:
+                          type: integer
+                          description: Флаг, показывающий, был ли голос пользователя отрицательным (1) или нет (0).
+                        reported:
+                          type: integer
+                          description: Флаг, показывающий, жаловались ли на отзыв (1) или нет (0).
+                        voted_funny:
+                          type: integer
+                          description: Флаг, показывающий, был ли отзыв смешным (1) или нет (0).
+              example:
+                success: 1
+                votes:
+                  - recommendationid: "178458855"
+                    voted_up: 0
+                    voted_down: 0
+                    reported: 0
+                    voted_funny: 0
+                  - recommendationid: "178403578"
+                    voted_up: 0
+                    voted_down: 0
+                    reported: 0
+                    voted_funny: 0
+                  - recommendationid: "179218727"
+                    voted_up: 0
+                    voted_down: 0
+                    reported: 0
+                    voted_funny: 0
+                  - recommendationid: "179359343"
+                    voted_up: 0
+                    voted_down: 0
+                    reported: 0
+                    voted_funny: 0
+                  - recommendationid: "179678200"
+                    voted_up: 0
+                    voted_down: 0
+                    reported: 0
+                    voted_funny: 0
+        '400':  # неверные параметры запроса
+          description: Неверный запрос, отсутствуют или некорректные параметры.
+        '404':  # анные не найдены
+          description: Данные не найдены для указанных рекомендаций или пользователя.
+        '500':  #внутренняя ошибка сервера
+          description: Внутренняя ошибка сервера.
+components:
+  schemas:
+    Vote:
+      type: object
+      properties:
+        recommendationid:
+          type: string
+        voted_up:
+          type: integer
+        voted_down:
+          type: integer
+        reported:
+          type: integer
+        voted_funny:
+          type: integer

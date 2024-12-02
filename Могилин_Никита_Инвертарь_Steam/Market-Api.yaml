@@ -1,0 +1,104 @@
+openapi: 3.0.0
+info:
+  title: Steam Market API
+  version: 1.0.0
+  description: API для взаимодействия с рынком Steam, включая продажу и просмотр цен.
+
+paths:
+  /market/{steamid}/{appid}/{contextid}/price/{itemid}:
+    get:
+      summary: "Получение цены на предмет"
+      parameters:
+        - name: steamid
+          in: path
+          required: true
+          schema:
+            type: string
+          description: "Идентификатор пользователя."
+        - name: appid
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: "ID приложения (например, 730)."
+        - name: contextid
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: "ID контекста инвентаря."
+        - name: itemid
+          in: path
+          required: true
+          schema:
+            type: string
+          description: "ID предмета, для которого нужно получить цену."
+      responses:
+        '200':
+          description: "Цена на предмет успешно получена"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  price:
+                    type: integer
+                    description: "Цена предмета в валюте Steam"
+        default:
+          description: "Ошибка при получении цены"
+
+  /market/{steamid}/{appid}/{contextid}/sell/{itemid}:
+    post:
+      summary: "Продажа предмета на рынке"
+      parameters:
+        - name: steamid
+          in: path
+          required: true
+          schema:
+            type: string
+          description: "Идентификатор пользователя."
+        - name: appid
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: "ID приложения (например, 730)."
+        - name: contextid
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: "ID контекста инвентаря."
+        - name: itemid
+          in: path
+          required: true
+          schema:
+            type: string
+          description: "ID предмета, который нужно продать."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                price:
+                  type: integer
+                  description: "Цена, по которой будет выставлен предмет на продажу."
+      responses:
+        '200':
+          description: "Предмет успешно выставлен на продажу"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  itemid:
+                    type: string
+                    description: "ID предмета, выставленного на продажу."
+        default:
+          description: "Ошибка при выставлении предмета на продажу"
