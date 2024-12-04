@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: Steam API
-  description: Äîêóìåíòàöèÿ äëÿ API Steam, âêëþ÷àÿ àâòîðèçàöèþ è äîïîëíèòåëüíûå ôóíêöèè.
+  description: Документация для API Steam, включая авторизацию и дополнительные функции.
   version: 1.0.0
 
 servers:
@@ -10,8 +10,8 @@ servers:
 paths:
   /api/auth/login:
     post:
-      summary: "Àâòîðèçàöèÿ ïîëüçîâàòåëÿ"
-      description: "Ïðîöåññ àâòîðèçàöèè ïîëüçîâàòåëÿ ñ èñïîëüçîâàíèåì OAuth2."
+      summary: "Авторизация пользователя"
+      description: "Процесс авторизации пользователя с использованием OAuth2."
       requestBody:
         required: true
         content:
@@ -21,13 +21,13 @@ paths:
               properties:
                 username:
                   type: string
-                  description: "Èìÿ ïîëüçîâàòåëÿ"
+                  description: "Имя пользователя"
                 password:
                   type: string
-                  description: "Ïàðîëü ïîëüçîâàòåëÿ"
+                  description: "Пароль пользователя"
       responses:
         '200':
-          description: "Óñïåøíàÿ àâòîðèçàöèÿ"
+          description: "Успешная авторизация"
           content:
             application/json:
               schema:
@@ -35,14 +35,14 @@ paths:
                 properties:
                   access_token:
                     type: string
-                    description: "OAuth2 òîêåí äëÿ àâòîðèçàöèè"
+                    description: "OAuth2 токен для авторизации"
         '400':
-          description: "Íåâåðíûå äàííûå äëÿ àâòîðèçàöèè"
+          description: "Неверные данные для авторизации"
           
   /api/steam/webapi:
     post:
-      summary: "Âçàèìîäåéñòâèå ñ WebAPI Steam"
-      description: "Ïîçâîëÿåò îòïðàâëÿòü çàïðîñû â WebAPI Steam ñ èñïîëüçîâàíèåì OAuth2 òîêåíà"
+      summary: "Взаимодействие с WebAPI Steam"
+      description: "Позволяет отправлять запросы в WebAPI Steam с использованием OAuth2 токена"
       requestBody:
         required: true
         content:
@@ -52,19 +52,19 @@ paths:
               properties:
                 access_token:
                   type: string
-                  description: "OAuth2 òîêåí äëÿ àâòîðèçàöèè"
+                  description: "OAuth2 токен для авторизации"
                 interface:
                   type: string
-                  description: "Èíòåðôåéñ WebAPI"
+                  description: "Интерфейс WebAPI"
                 method:
                   type: string
-                  description: "Ìåòîä äëÿ âûïîëíåíèÿ"
+                  description: "Метод для выполнения"
                 params:
                   type: object
-                  description: "Ïàðàìåòðû äëÿ ìåòîäà"
+                  description: "Параметры для метода"
       responses:
         '200':
-          description: "Óñïåøíûé îòâåò îò WebAPI"
+          description: "Успешный ответ от WebAPI"
           content:
             application/json:
               schema:
@@ -72,19 +72,19 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    description: "Óñïåõ çàïðîñà"
+                    description: "Успех запроса"
                   data:
                     type: object
-                    description: "Îòâåòíûå äàííûå îò WebAPI"
+                    description: "Ответные данные от WebAPI"
         '400':
-          description: "Îøèáêà ïðè âûïîëíåíèè çàïðîñà"
+          description: "Ошибка при выполнении запроса"
   /api/user/context:
     get:
-      summary: "Ïîëó÷èòü èíôîðìàöèþ î òåêóùåì êîíòåêñòå ïîëüçîâàòåëÿ"
-      description: "Âîçâðàùàåò èíôîðìàöèþ î òîì, â êàêîì êîíòåêñòå ðàáîòàåò ïîëüçîâàòåëü (Steam êëèåíò, èãðà, ìîáèëüíîå ïðèëîæåíèå è ò. ä.)"
+      summary: "Получить информацию о текущем контексте пользователя"
+      description: "Возвращает информацию о том, в каком контексте работает пользователь (Steam клиент, игра, мобильное приложение и т. д.)"
       responses:
         '200':
-          description: "Èíôîðìàöèÿ î êîíòåêñòå ïîëüçîâàòåëÿ"
+          description: "Информация о контексте пользователя"
           content:
             application/json:
               schema:
@@ -92,16 +92,16 @@ paths:
                 properties:
                   inSteamClient:
                     type: boolean
-                    description: "Ïîëüçîâàòåëü â Steam êëèåíòå"
+                    description: "Пользователь в Steam клиенте"
                   inGameOverlay:
                     type: boolean
-                    description: "Ïîëüçîâàòåëü â îâåðëåé-ðåæèìå èãðû"
+                    description: "Пользователь в оверлей-режиме игры"
                   inSteamTenfootBrowser:
                     type: boolean
-                    description: "Ïîëüçîâàòåëü â 10-ôóòîâîì áðàóçåðå Steam"
+                    description: "Пользователь в 10-футовом браузере Steam"
                   inMobileChat:
                     type: boolean
-                    description: "Ïîëüçîâàòåëü â ìîáèëüíîì ÷àòå Steam"
+                    description: "Пользователь в мобильном чате Steam"
                   inMobileApp:
                     type: boolean
-                    description: "Ïîëüçîâàòåëü â ìîáèëüíîì ïðèëîæåíèè Steam"
+                    description: "Пользователь в мобильном приложении Steam"
