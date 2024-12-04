@@ -2,45 +2,45 @@ openapi: 3.0.0
 info:
   title: Steam Inventory API
   version: 1.0.0
-  description: API для взаимодействия с инвентарём Steam.
+  description: API РґР»СЏ РІР·Р°РёРјРѕРґРµР№СЃС‚РІРёСЏ СЃ РёРЅРІРµРЅС‚Р°СЂС‘Рј Steam.
 paths:
   /inventory/{steamid}/{appid}/{contextid}:
     get:
-      summary: "Получение содержимого инвентаря"
+      summary: "РџРѕР»СѓС‡РµРЅРёРµ СЃРѕРґРµСЂР¶РёРјРѕРіРѕ РёРЅРІРµРЅС‚Р°СЂСЏ"
       parameters:
         - name: steamid
           in: path
           required: true
           schema:
             type: string
-          description: "Идентификатор пользователя."
+          description: "РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ."
         - name: appid
           in: path
           required: true
           schema:
             type: integer
-          description: "ID приложения (например, 730)."
+          description: "ID РїСЂРёР»РѕР¶РµРЅРёСЏ (РЅР°РїСЂРёРјРµСЂ, 730)."
         - name: contextid
           in: path
           required: true
           schema:
             type: integer
-          description: "ID контекста инвентаря."
+          description: "ID РєРѕРЅС‚РµРєСЃС‚Р° РёРЅРІРµРЅС‚Р°СЂСЏ."
         - name: l
           in: query
           required: false
           schema:
             type: string
-          description: "Язык интерфейса (например, russian)."
+          description: "РЇР·С‹Рє РёРЅС‚РµСЂС„РµР№СЃР° (РЅР°РїСЂРёРјРµСЂ, russian)."
         - name: count
           in: query
           required: false
           schema:
             type: integer
-          description: "Количество возвращаемых предметов."
+          description: "РљРѕР»РёС‡РµСЃС‚РІРѕ РІРѕР·РІСЂР°С‰Р°РµРјС‹С… РїСЂРµРґРјРµС‚РѕРІ."
       responses:
         '200':
-          description: "Содержимое инвентаря успешно получено"
+          description: "РЎРѕРґРµСЂР¶РёРјРѕРµ РёРЅРІРµРЅС‚Р°СЂСЏ СѓСЃРїРµС€РЅРѕ РїРѕР»СѓС‡РµРЅРѕ"
           content:
             application/json:
               schema:
@@ -53,4 +53,4 @@ paths:
                     items:
                       type: object
         default:
-          description: "Ошибка при получении инвентаря"
+          description: "РћС€РёР±РєР° РїСЂРё РїРѕР»СѓС‡РµРЅРёРё РёРЅРІРµРЅС‚Р°СЂСЏ"
