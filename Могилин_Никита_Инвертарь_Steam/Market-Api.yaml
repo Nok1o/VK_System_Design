@@ -2,40 +2,40 @@ openapi: 3.0.0
 info:
   title: Steam Market API
   version: 1.0.0
-  description: API для взаимодействия с рынком Steam, включая продажу и просмотр цен.
+  description: API РґР»СЏ РІР·Р°РёРјРѕРґРµР№СЃС‚РІРёСЏ СЃ СЂС‹РЅРєРѕРј Steam, РІРєР»СЋС‡Р°СЏ РїСЂРѕРґР°Р¶Сѓ Рё РїСЂРѕСЃРјРѕС‚СЂ С†РµРЅ.
 
 paths:
   /market/{steamid}/{appid}/{contextid}/price/{itemid}:
     get:
-      summary: "Получение цены на предмет"
+      summary: "РџРѕР»СѓС‡РµРЅРёРµ С†РµРЅС‹ РЅР° РїСЂРµРґРјРµС‚"
       parameters:
         - name: steamid
           in: path
           required: true
           schema:
             type: string
-          description: "Идентификатор пользователя."
+          description: "РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ."
         - name: appid
           in: path
           required: true
           schema:
             type: integer
-          description: "ID приложения (например, 730)."
+          description: "ID РїСЂРёР»РѕР¶РµРЅРёСЏ (РЅР°РїСЂРёРјРµСЂ, 730)."
         - name: contextid
           in: path
           required: true
           schema:
             type: integer
-          description: "ID контекста инвентаря."
+          description: "ID РєРѕРЅС‚РµРєСЃС‚Р° РёРЅРІРµРЅС‚Р°СЂСЏ."
         - name: itemid
           in: path
           required: true
           schema:
             type: string
-          description: "ID предмета, для которого нужно получить цену."
+          description: "ID РїСЂРµРґРјРµС‚Р°, РґР»СЏ РєРѕС‚РѕСЂРѕРіРѕ РЅСѓР¶РЅРѕ РїРѕР»СѓС‡РёС‚СЊ С†РµРЅСѓ."
       responses:
         '200':
-          description: "Цена на предмет успешно получена"
+          description: "Р¦РµРЅР° РЅР° РїСЂРµРґРјРµС‚ СѓСЃРїРµС€РЅРѕ РїРѕР»СѓС‡РµРЅР°"
           content:
             application/json:
               schema:
@@ -45,38 +45,38 @@ paths:
                     type: boolean
                   price:
                     type: integer
-                    description: "Цена предмета в валюте Steam"
+                    description: "Р¦РµРЅР° РїСЂРµРґРјРµС‚Р° РІ РІР°Р»СЋС‚Рµ Steam"
         default:
-          description: "Ошибка при получении цены"
+          description: "РћС€РёР±РєР° РїСЂРё РїРѕР»СѓС‡РµРЅРёРё С†РµРЅС‹"
 
   /market/{steamid}/{appid}/{contextid}/sell/{itemid}:
     post:
-      summary: "Продажа предмета на рынке"
+      summary: "РџСЂРѕРґР°Р¶Р° РїСЂРµРґРјРµС‚Р° РЅР° СЂС‹РЅРєРµ"
       parameters:
         - name: steamid
           in: path
           required: true
           schema:
             type: string
-          description: "Идентификатор пользователя."
+          description: "РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ."
         - name: appid
           in: path
           required: true
           schema:
             type: integer
-          description: "ID приложения (например, 730)."
+          description: "ID РїСЂРёР»РѕР¶РµРЅРёСЏ (РЅР°РїСЂРёРјРµСЂ, 730)."
         - name: contextid
           in: path
           required: true
           schema:
             type: integer
-          description: "ID контекста инвентаря."
+          description: "ID РєРѕРЅС‚РµРєСЃС‚Р° РёРЅРІРµРЅС‚Р°СЂСЏ."
         - name: itemid
           in: path
           required: true
           schema:
             type: string
-          description: "ID предмета, который нужно продать."
+          description: "ID РїСЂРµРґРјРµС‚Р°, РєРѕС‚РѕСЂС‹Р№ РЅСѓР¶РЅРѕ РїСЂРѕРґР°С‚СЊ."
       requestBody:
         required: true
         content:
@@ -86,10 +86,10 @@ paths:
               properties:
                 price:
                   type: integer
-                  description: "Цена, по которой будет выставлен предмет на продажу."
+                  description: "Р¦РµРЅР°, РїРѕ РєРѕС‚РѕСЂРѕР№ Р±СѓРґРµС‚ РІС‹СЃС‚Р°РІР»РµРЅ РїСЂРµРґРјРµС‚ РЅР° РїСЂРѕРґР°Р¶Сѓ."
       responses:
         '200':
-          description: "Предмет успешно выставлен на продажу"
+          description: "РџСЂРµРґРјРµС‚ СѓСЃРїРµС€РЅРѕ РІС‹СЃС‚Р°РІР»РµРЅ РЅР° РїСЂРѕРґР°Р¶Сѓ"
           content:
             application/json:
               schema:
@@ -99,6 +99,6 @@ paths:
                     type: boolean
                   itemid:
                     type: string
-                    description: "ID предмета, выставленного на продажу."
+                    description: "ID РїСЂРµРґРјРµС‚Р°, РІС‹СЃС‚Р°РІР»РµРЅРЅРѕРіРѕ РЅР° РїСЂРѕРґР°Р¶Сѓ."
         default:
-          description: "Ошибка при выставлении предмета на продажу"
+          description: "РћС€РёР±РєР° РїСЂРё РІС‹СЃС‚Р°РІР»РµРЅРёРё РїСЂРµРґРјРµС‚Р° РЅР° РїСЂРѕРґР°Р¶Сѓ"
