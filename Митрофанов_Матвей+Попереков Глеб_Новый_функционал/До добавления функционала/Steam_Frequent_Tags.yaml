@@ -1,0 +1,65 @@
+openapi: 3.0.0
+info:
+  title: Steam Frequent Tags API
+  version: 1.0.0
+  description: >
+    Этот API позволяет получить список часто используемых тегов пользователя на Steam. Ответ включает в себя идентификатор тега, его название и количество раз, которое этот тег был использован.
+servers:
+  - url: https://api.steampowered.com
+paths:
+  /tagdata/myfrequenttags:  # Путь к API
+    get:
+      summary: Получить список часто используемых тегов
+      description: >
+        Получает список часто используемых тегов для пользователя. Ответ включает информацию о тегах, таких как их идентификатор, название и количество раз, которое тег был использован.
+      parameters:
+        - name: v  # Параметр версии API
+          in: query  # Параметр передается в строке запроса
+          description: Версия API.
+          required: true
+          schema:
+            type: string
+            example: "2"
+      responses:
+        '200':  успешный запрос
+          description: Успешный ответ с данными о частых тегах.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    tagid:
+                      type: integer
+                      description: Уникальный идентификатор тега.
+                    name:
+                      type: string
+                      description: Название тега.
+                    count:
+                      type: integer
+                      description: Количество раз, которое тег был использован.
+              example:
+                - tagid: 1663
+                  name: "Шутер от первого лица"
+                  count: 1
+                - tagid: 1774
+                  name: "Шутер"
+                  count: 1
+        '400':  #неверные параметры запроса
+          description: Неверный запрос, отсутствуют или некорректные параметры.
+        '404':  #данные не найдены
+          description: Теги не найдены для пользователя.
+        '500':  #внутренняя ошибка сервера
+          description: Внутренняя ошибка сервера.
+components:
+  schemas:
+    FrequentTag:
+      type: object
+      properties:
+        tagid:
+          type: integer
+        name:
+          type: string
+        count:
+          type: integer

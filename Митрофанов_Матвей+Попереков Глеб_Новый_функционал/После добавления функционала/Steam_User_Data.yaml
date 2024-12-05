@@ -1,0 +1,183 @@
+openapi: 3.0.0
+info:
+  title: Steam User Data API
+  description: API для работы с данными пользователя, включая список желаемого, рекомендуемые теги и приложения, корзину и настройки.
+  version: 1.0.0
+servers:
+  - url: https://store.steampowered.com
+
+paths:
+  /userdata/:
+    get:
+      summary: Получить данные пользователя
+      description: Возвращает полную информацию о предпочтениях пользователя, его списке желаемого, тегах и корзине.
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Уникальный идентификатор пользователя.
+        - name: cc
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Код страны пользователя (например, RU).
+        - name: v
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Версия API.
+      responses:
+        '200':
+          description: Успешный ответ с данными пользователя.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserData'
+        '400':
+          description: Неверный запрос (например, отсутствует обязательный параметр).
+        '401':
+          description: Неавторизованный доступ (требуется токен).
+        '500':
+          description: Внутренняя ошибка сервера.
+
+  /wishlist/:
+    get:
+      summary: Получить список желаемого
+      description: Возвращает список идентификаторов игр, добавленных пользователем в список желаемого.
+      responses:
+        '200':
+          description: Успешный ответ.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: integer
+        '401':
+          description: Неавторизованный доступ.
+
+    post:
+      summary: Добавить игру в список желаемого
+      description: Добавляет идентификатор игры в список желаемого пользователя.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                app_id:
+                  type: integer
+                  description: Идентификатор игры.
+              required:
+                - app_id
+      responses:
+        '201':
+          description: Игра успешно добавлена в список желаемого.
+        '400':
+          description: Неверный запрос (например, отсутствует параметр app_id).
+
+    delete:
+      summary: Удалить игру из списка желаемого
+      description: Удаляет игру из списка желаемого по идентификатору.
+      parameters:
+        - name: app_id
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: Идентификатор игры.
+      responses:
+        '204':
+          description: Успешное удаление.
+        '400':
+          description: Неверный запрос (например, отсутствует параметр app_id).
+
+  /tags/:
+    get:
+      summary: Получить рекомендуемые теги
+      description: Возвращает список тегов, рекомендованных пользователю.
+      responses:
+        '200':
+          description: Успешный ответ.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tag'
+
+    post:
+      summary: Добавить новый тег
+      description: Добавляет тег в список рекомендованных пользователю.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tag'
+      responses:
+        '201':
+          description: Тег успешно добавлен.
+        '400':
+          description: Неверный запрос (например, отсутствует информация о теге).
+
+components:
+  schemas:
+    UserData:
+      type: object
+      properties:
+        rgWishlist:
+          type: array
+          items:
+            type: integer
+          description: Список желаемого пользователя.
+        rgOwnedPackages:
+          type: array
+          items:
+            type: integer
+          description: Список приобретенных пакетов.
+        rgOwnedApps:
+          type: array
+          items:
+            type: integer
+          description: Список приобретенных приложений.
+        rgRecommendedTags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+          description: Рекомендуемые теги.
+        rgRecommendedApps:
+          type: array
+          items:
+            type: integer
+          description: Рекомендуемые приложения.
+        rgAppsInCart:
+          type: array
+          items:
+            type: integer
+          description: Приложения в корзине пользователя.
+        bAllowAppImpressions:
+          type: boolean
+          description: Разрешены ли рекомендации приложений.
+        nCartLineItemCount:
+          type: integer
+          description: Количество позиций в корзине.
+        nTotalCartDiscount:
+          type: integer
+          description: Общая скидка в корзине.
+
+    Tag:
+      type: object
+      properties:
+        tagid:
+          type: integer
+          description: Уникальный идентификатор тега.
+        name:
+          type: string
+          description: Название тега.
+

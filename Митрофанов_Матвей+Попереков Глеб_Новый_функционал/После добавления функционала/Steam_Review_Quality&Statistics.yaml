@@ -1,0 +1,183 @@
+openapi: 3.0.0
+info:
+  title: Steam Review Quality and Statistics API
+  version: 1.0.0
+  description: >
+    Этот API предоставляет подробную статистику отзывов, фильтруемую по качеству, количеству игр, времени игры и другим параметрам. Статистика включает общую информацию о положительных и отрицательных отзывах за определенный период.
+servers:
+  - url: https://api.steampowered.com
+paths:
+  /730:
+    get:
+      summary: Получить подробную статистику отзывов Steam
+      description: >
+        Получает подробную информацию о статистике отзывов для игры Steam, включая качество отзывов, время игры, количество положительных и отрицательных отзывов, с фильтрами по различным параметрам.
+      parameters:
+        - name: use_review_quality  # Параметр для включения фильтра по качеству отзывов
+          in: query  # Параметр передается в строке запроса
+          description: Фильтровать по качеству отзывов (1 — включить фильтрацию, 0 — выключить).
+          required: false
+          schema:
+            type: integer
+            enum:
+              - 1
+              - 0
+        - name: cursor  # Параметр для пагинации
+          in: query
+          description: Используется для пагинации результатов (например, "cursor=*").
+          required: false
+          schema:
+            type: string
+        - name: day_range  # Параметр для диапазона дней
+          in: query
+          description: Диапазон дней для анализа статистики (например, последние 30 дней).
+          required: false
+          schema:
+            type: integer
+        - name: start_date
+          in: query
+          description: Начальная дата для статистики в формате Unix timestamp (если не указана, используется значение по умолчанию).
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: end_date
+          in: query
+          description: Конечная дата для статистики в формате Unix timestamp.
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: review_type
+          in: query
+          description: Тип отзыва для фильтрации (например, "all" для всех отзывов).
+          required: false
+          schema:
+            type: string
+            enum:
+              - all
+              - positive
+              - negative
+        - name: purchase_type  # Тип покупки для фильтрации
+          in: query
+          description: Фильтровать по типу покупки (например, "all" для всех).
+          required: false
+          schema:
+            type: string
+            enum:
+              - all
+              - purchased
+              - not_purchased
+        - name: playtime_filter_min  # Минимальное время игры для фильтрации
+          in: query
+          description: Минимальное время игры для фильтрации.
+          required: false
+          schema:
+            type: integer
+        - name: playtime_filter_max  # Максимальное время игры для фильтрации
+          in: query
+          description: Максимальное время игры для фильтрации.
+          required: false
+          schema:
+            type: integer
+        - name: filter_offtopic_activity  # Фильтрация по активности пользователей
+          in: query
+          description: Учитывать ли посты, не связанные с игрой (1 — исключить, 0 — включить).
+          required: false
+          schema:
+            type: integer
+            enum:
+              - 1
+              - 0
+        - name: summary_num_positive_reviews  # Количество положительных отзывов в сводке
+          in: query
+          description: Количество положительных отзывов, которые будут отображаться в сводке.
+          required: false
+          schema:
+            type: integer
+        - name: summary_num_reviews  # Общее количество отзывов
+          in: query
+          description: Общее количество отзывов, которое будет отображаться в сводке.
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':  # успешный запрос
+          description: Успешный ответ с данными статистики.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: object
+                    properties:
+                      summary_num_positive_reviews:
+                        type: integer
+                        description: Количество положительных отзывов в сводке.
+                      summary_num_reviews:
+                        type: integer
+                        description: Общее количество отзывов в сводке.
+                      use_review_quality:
+                        type: integer
+                        description: Указывает, используется ли фильтрация по качеству отзывов.
+                      filter_offtopic_activity:
+                        type: integer
+                        description: Указывает, исключена ли активность, не связанная с игрой.
+                      detailed_statistics:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            date:
+                              type: integer
+                              description: Unix timestamp для конкретной даты отзыва.
+                            recommendations_up:
+                              type: integer
+                              description: Количество положительных рекомендаций за день.
+                            recommendations_down:
+                              type: integer
+                              description: Количество отрицательных рекомендаций за день.
+              example:
+                results:
+                  summary_num_positive_reviews: 7318401
+                  summary_num_reviews: 8419061
+                  use_review_quality: 1
+                  filter_offtopic_activity: 1
+                  detailed_statistics:
+                    - date: 1632182400
+                      recommendations_up: 500
+                      recommendations_down: 50
+                    - date: 1632268800
+                      recommendations_up: 600
+                      recommendations_down: 40
+        '400':  # неверные параметры запроса
+          description: Неверный запрос, отсутствуют или некорректные параметры.
+        '500':  # внутренняя ошибка сервера
+          description: Внутренняя ошибка сервера.
+        '404':  # данные не найдены
+          description: Данные не найдены для указанной игры или некорректные параметры запроса.
+components:
+  schemas:
+    # Схема для данных о статистике
+    ReviewSummary:
+      type: object
+      properties:
+        summary_num_positive_reviews:
+          type: integer
+        summary_num_reviews:
+          type: integer
+        use_review_quality:
+          type: integer
+        filter_offtopic_activity:
+          type: integer
+    # Схема для детализированной статистики
+    DetailedStatistics:
+      type: object
+      properties:
+        date:
+          type: integer
+        recommendations_up:
+          type: integer
+        recommendations_down:
+          type: integer

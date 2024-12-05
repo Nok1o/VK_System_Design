@@ -1,0 +1,169 @@
+openapi: "3.0.0"
+info:
+  title: "Обработчик запросов на предоставление демоверсии игры"
+  description: "API для проверки и обработки запросов на предоставление доступа к демо-версии игры"
+  version: "1.0.0"
+servers:
+  - url: "https://api.steampowered.com/demo-access"
+paths:
+  /check-access:
+    post:
+      summary: "Выдать доступ к демо-версии"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccessRequest'
+      responses:
+        "200":
+          description: "Доступ предоставлен"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessResponse'
+        "403":
+          description: "Доступ запрещен"
+      parameters:
+        - name: X-API-KEY
+          in: header
+          description: "API ключ для доступа"
+          required: true
+          schema:
+            type: string
+    get:
+      summary: "Получить список запросов на доступ"
+      parameters:
+        - name: userId
+          in: query
+          description: "ID пользователя"
+          required: false
+          schema:
+            type: string
+        - name: gameId
+          in: query
+          description: "ID игры"
+          required: false
+          schema:
+            type: string
+        - name: X-API-KEY
+          in: header
+          description: "API ключ для доступа"
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Список запросов"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AccessLog'
+        "404":
+          description: "Пользователь или игра не найдены"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /update-access:
+    put:
+      summary: "Обновить доступ к демо-версии игры"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccessRequest'
+      responses:
+        "200":
+          description: "Доступ обновлен"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessResponse'
+        "403":
+          description: "Доступ запрещен"
+      parameters:
+        - name: X-API-KEY
+          in: header
+          description: "API ключ для доступа"
+          required: true
+          schema:
+            type: string
+  /delete-access:
+    delete:
+      summary: "Удалить доступ к демо-версии игры"
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          description: "ID пользователя"
+          schema:
+            type: string
+        - name: gameId
+          in: query
+          required: true
+          description: "ID игры"
+          schema:
+            type: string
+        - name: X-API-KEY
+          in: header
+          description: "API ключ для доступа"
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: "Доступ удален"
+        "403":
+          description: "Доступ запрещен"
+        "404":
+          description: "Доступ с указанным ID не найден"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    AccessRequest:
+      type: object
+      properties:
+        userId:
+          type: string
+        gameId:
+          type: string
+        expiration_date:
+          type: string
+          format: date
+          description: "Дата истечения срока действия доступа"
+    AccessResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+    AccessLog:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        gameId:
+          type: string
+        status:
+          type: string
+        expiration_date:
+          type: string
+          format: date
+          description: "Дата истечения срока действия доступа"
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string

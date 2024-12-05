@@ -1,0 +1,115 @@
+openapi: 3.0.0
+info:
+  title: Steam Tags API
+  version: 1.0.0
+  description: >
+    Этот API предоставляет информацию о тегах, которые связаны с играми. Включает популярные теги, такие как жанры игр, а также их различные атрибуты и характеристики.
+servers:
+  - url: https://api.steampowered.com  # Базовый URL для запросов
+paths:
+  /russian:  # Путь к API для получения тегов на русском языке
+    get:
+      summary: Получить список тегов на русском языке
+      description: >
+        Получает список тегов, связанных с играми на русском языке. Каждый тег содержит уникальный идентификатор и название.
+      responses:
+        '200':  #успешный запрос
+          description: Успешный ответ с данными о тегах на русском языке.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    tagid:
+                      type: integer
+                      description: Уникальный идентификатор тега.
+                    name:
+                      type: string
+                      description: Название тега.
+              example:
+                - tagid: 492
+                  name: "Инди"
+                - tagid: 19
+                  name: "Экшен"
+                - tagid: 21
+                  name: "Приключение"
+                - tagid: 597
+                  name: "Казуальная игра"
+                - tagid: 122
+                  name: "Ролевая игра"
+        '400':  неверные параметры запроса
+          description: Неверный запрос, отсутствуют или некорректные параметры.
+        '500':  #внутренняя ошибка сервера
+          description: Внутренняя ошибка сервера.
+
+  /tagapp:  # Путь к API для получения информации о теге (например, "Для нескольких игроков")
+    get:
+      summary: Получить информацию о конкретном теге
+      description: >
+        Получает подробную информацию о конкретном теге, включая его идентификатор, название, атрибуты, такие как возможность быть отозванным или является ли он отчетным, а также вес тега.
+      parameters:
+        - name: tagid  # Параметр для получения информации о теге по его идентификатору
+          in: query
+          description: Уникальный идентификатор тега.
+          required: true
+          schema:
+            type: integer
+            example: 3859
+      responses:
+        '200':  #успешный запрос
+          description: Успешный ответ с данными о теге.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: Название тега.
+                  tagid:
+                    type: integer
+                    description: Уникальный идентификатор тега.
+                  withdraw:
+                    type: boolean
+                    description: Признак того, может ли тег быть отозван.
+                  is_reported:
+                    type: boolean
+                    description: Признак того, был ли тег сообщен.
+                  browseable:
+                    type: boolean
+                    description: Признак того, может ли тег быть просмотрен.
+                  weight:
+                    type: integer
+                    description: Вес тега.
+              example:
+                name: "Для нескольких игроков"
+                tagid: 3859
+                withdraw: false
+                is_reported: false
+                browseable: true
+                weight: 1
+        '400':  #неверные параметры запроса
+          description: Неверный запрос, отсутствуют или некорректные параметры.
+        '404':  #данные о теге не найдены
+          description: Тег с указанным ID не найден.
+        '500':  #внутренняя ошибка сервера
+          description: Внутренняя ошибка сервера.
+components:
+  schemas:
+    Tag:
+      type: object
+      properties:
+        tagid:
+          type: integer
+        name:
+          type: string
+        withdraw:
+          type: boolean
+        is_reported:
+          type: boolean
+        browseable:
+          type: boolean
+        weight:
+          type: integer

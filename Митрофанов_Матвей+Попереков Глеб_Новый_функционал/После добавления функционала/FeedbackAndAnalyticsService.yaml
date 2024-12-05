@@ -1,0 +1,117 @@
+openapi: "3.0.0"
+info:
+  title: "Сервис сбора аналитики и обратной связи"
+  description: "API для сбора отзывов и аналитики по демо-версиям"
+  version: "1.0.0"
+servers:
+  - url: "https://api.steampowered.com/demo-access/feedback"
+paths:
+  /submit-feedback:
+    post:
+      summary: "Отправить отзыв о демо-версии"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Feedback'
+      responses:
+        "201":
+          description: "Отзыв успешно отправлен"
+        "404":
+          description: "Пользователь или игра не найдены"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /analytics:
+    get:
+      summary: "Получить аналитику по демо-версиям"
+      responses:
+        "200":
+          description: "Аналитические данные"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Analytics'
+  /feedbacks:
+    get:
+      summary: "Получить отзывы пользователя по демо-версии"
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          description: "ID пользователя"
+          schema:
+            type: string
+        - name: gameId
+          in: query
+          required: true
+          description: "ID игры"
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Список отзывов"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FeedbackDetails'
+        "404":
+          description: "Пользователь или игра не найдены"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    Feedback:
+      type: object
+      properties:
+        userId:
+          type: string
+        gameId:
+          type: string
+        rating:
+          type: integer
+          format: int32
+        comments:
+          type: string
+    Analytics:
+      type: object
+      properties:
+        gameId:
+          type: string
+        averageRating:
+          type: number
+          format: float
+        totalFeedbacks:
+          type: integer
+          format: int32
+    FeedbackDetails:
+      type: object
+      properties:
+        feedbackId:
+          type: string
+        gameId:
+          type: string
+        userId:
+          type: string
+        rating:
+          type: integer
+          format: int32
+        comments:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string

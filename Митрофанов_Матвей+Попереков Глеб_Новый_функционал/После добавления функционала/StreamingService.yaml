@@ -1,0 +1,120 @@
+openapi: "3.0.0"
+info:
+  title: "Сервис стриминга игры"
+  description: "API для управления процессом стриминга игры"
+  version: "1.0.0"
+servers:
+  - url: "https://api.steampowered.com/demo-access/streaming"
+paths:
+  /start-stream:
+    post:
+      summary: "Запустить стрим демо-версии"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StreamRequest'
+      responses:
+        "201":
+          description: "Стрим успешно запущен"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StreamResponse'
+        "404":
+          description: "Пользователь или игра не найдены"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+        - name: X-API-KEY
+          in: header
+          description: "API ключ для доступа"
+          required: true
+          schema:
+            type: string
+  /stop-stream/{streamId}:
+    delete:
+      summary: "Остановить стрим"
+      parameters:
+        - name: "streamId"
+          in: "path"
+          required: true
+          schema:
+            type: string
+        - name: X-API-KEY
+          in: header
+          description: "API ключ для доступа"
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: "Стрим остановлен"
+        "404":
+          description: "Стрим с указанным ID не найден"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /stream-id:
+    get:
+      summary: "Получить streamId по userId и gameId"
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          description: "ID пользователя"
+          schema:
+            type: string
+        - name: gameId
+          in: query
+          required: true
+          description: "ID игры"
+          schema:
+            type: string
+        - name: X-API-KEY
+          in: header
+          description: "API ключ для доступа"
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "streamId найден"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StreamResponse'
+        "404":
+          description: "Пользователь или игра не найдены"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    StreamRequest:
+      type: object
+      properties:
+        userId:
+          type: string
+        gameId:
+          type: string
+    StreamResponse:
+      type: object
+      properties:
+        streamId:
+          type: string
+        status:
+          type: string
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
