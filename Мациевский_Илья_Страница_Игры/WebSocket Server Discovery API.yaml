@@ -1,0 +1,93 @@
+openapi: 3.0.3
+info:
+  title: Steam WebSocket Server Discovery API
+  description: API для получения списка доступных WebSocket серверов Steam с информацией о нагрузке.
+  version: 1.0.0
+paths:
+  /v1/:
+    get:
+      summary: Получить список WebSocket серверов
+      description: Возвращает информацию о доступных WebSocket серверах, их нагрузке, расположении и других характеристиках.
+      parameters:
+        - name: cellid
+          in: query
+          description: Идентификатор ячейки сети Steam. Используется для определения сервера.
+          required: true
+          schema:
+            type: integer
+            example: 0
+        - name: cmtype
+          in: query
+          description: Тип соединения. Для WebSocket следует указать `websockets`.
+          required: true
+          schema:
+            type: string
+            enum: [websockets]
+            example: "websockets"
+        - name: origin
+          in: query
+          description: Источник запроса (обычно домен Steam).
+          required: true
+          schema:
+            type: string
+            example: "https://steamcommunity.com"
+      responses:
+        '200':
+          description: Успешное выполнение запроса.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    type: object
+                    properties:
+                      serverlist:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            endpoint:
+                              type: string
+                              description: Основной адрес сервера.
+                              example: "cmp1-fra2.steamserver.net:27024"
+                            legacy_endpoint:
+                              type: string
+                              description: Альтернативный адрес сервера.
+                              example: "cmp2-fra2.steamserver.net:27024"
+                            type:
+                              type: string
+                              description: Тип соединения (например, WebSocket).
+                              example: "websockets"
+                            dc:
+                              type: string
+                              description: Дата-центр, где размещён сервер.
+                              example: "fra2"
+                            realm:
+                              type: string
+                              description: Область сервера.
+                              example: "steamglobal"
+                            load:
+                              type: integer
+                              description: Текущая нагрузка на сервер.
+                              example: 28
+                            wtd_load:
+                              type: number
+                              description: Усреднённая взвешенная нагрузка.
+                              example: 104.18755578994751
+                      success:
+                        type: boolean
+                        description: Успешность выполнения запроса.
+                        example: true
+                      message:
+                        type: string
+                        description: Дополнительное сообщение (может быть пустым).
+                        example: ""
+        '400':
+          description: Неправильные параметры запроса.
+        '500':
+          description: Ошибка сервера.
+
+servers:
+  - url: https://steamcommunity.com
+    description: Базовый URL API Steam.

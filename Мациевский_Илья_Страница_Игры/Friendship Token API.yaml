@@ -1,0 +1,118 @@
+openapi: 3.0.0
+info:
+  title: Steam Friendship Token API
+  description: API для генерации токена дружбы, используемого для добавления пользователей в друзья.
+  version: 1.0.0
+paths:
+  /generateFriendToken:
+    post:
+      summary: Генерация токена дружбы
+      description: Создает токен дружбы, который можно использовать для добавления других пользователей в друзья.
+      requestBody:
+        description: Параметры для генерации токена
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                  description: Уникальный идентификатор пользователя, создающего токен.
+              required:
+                - user_id
+      responses:
+        "200":
+          description: Успешный ответ с токеном дружбы.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: integer
+                    enum: [1, 0]
+                    description: Указывает успешность операции. 1 — успешно, 0 — ошибка.
+                  token:
+                    type: string
+                    description: Сгенерированный токен дружбы.
+                  invite:
+                    type: object
+                    properties:
+                      invite_token:
+                        type: string
+                        description: Токен для приглашения.
+                      invite_limit:
+                        type: string
+                        description: Лимит использования токена.
+                      invite_duration:
+                        type: string
+                        description: Срок действия токена (в секундах).
+                      time_created:
+                        type: integer
+                        description: Время создания токена в формате UNIX.
+                      valid:
+                        type: integer
+                        enum: [1, 0]
+                        description: Указывает, является ли токен действительным.
+                      success:
+                        type: integer
+                        enum: [1, 0]
+                        description: Указывает успешность генерации токена приглашения.
+                      rwgrsn:
+                        type: integer
+                        description: Внутренний статус генерации токена.
+        "400":
+          description: Некорректный запрос.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: integer
+                    enum: [0]
+                  error:
+                    type: string
+                    description: Описание ошибки.
+        "500":
+          description: Ошибка сервера.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: integer
+                    enum: [0]
+                  error:
+                    type: string
+                    description: Описание ошибки сервера.
+components:
+  schemas:
+    Invite:
+      type: object
+      properties:
+        invite_token:
+          type: string
+          description: Токен для приглашения.
+        invite_limit:
+          type: string
+          description: Лимит использования токена.
+        invite_duration:
+          type: string
+          description: Срок действия токена (в секундах).
+        time_created:
+          type: integer
+          description: Время создания токена в формате UNIX.
+        valid:
+          type: integer
+          enum: [1, 0]
+          description: Указывает, является ли токен действительным.
+        success:
+          type: integer
+          enum: [1, 0]
+          description: Успешность генерации токена приглашения.
+        rwgrsn:
+          type: integer
+          description: Внутренний статус генерации токена.

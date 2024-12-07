@@ -1,0 +1,55 @@
+openapi: 3.0.3
+info:
+  title: Steam Chat Emoji API
+  description: API для получения данных о смайлике, включая его кодировку и информацию о приложении.
+  version: 1.0.0
+paths:
+  /emoji/json/:
+    get:
+      summary: Получить данные о смайлике чата Steam
+      description: Возвращает информацию о смайлике, используемом в чате Steam, включая данные о приложении, кодировке и ссылке на изображение.
+      parameters:
+        - name: appid
+          in: query
+          description: Идентификатор приложения, для которого используется смайлик.
+          required: true
+          schema:
+            type: integer
+            example: 753
+        - name: app_name
+          in: query
+          description: Название приложения.
+          required: true
+          schema:
+            type: string
+            example: "Steam"
+      responses:
+        '200':
+          description: Успешное выполнение запроса.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  appid:
+                    type: integer
+                    description: Идентификатор приложения.
+                    example: 753
+                  app_name:
+                    type: string
+                    description: Название приложения.
+                    example: "Steam"
+                  url:
+                    type: string
+                    description: Данные смайлика в формате Base64 или ссылка на изображение.
+                    example: "data:image/png;base64,iVBORw0KGgoAAAANS..."
+        '400':
+          description: Неправильные параметры запроса.
+        '404':
+          description: Смайлик не найден.
+        '500':
+          description: Внутренняя ошибка сервера.
+
+servers:
+  - url: https://steamcommunity.com
+    description: Базовый URL Steam Community.

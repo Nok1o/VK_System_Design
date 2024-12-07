@@ -1,0 +1,95 @@
+openapi: 3.0.3
+info:
+  title: Steam MiniProfile API
+  description: API для получения сведений о мини-профиле пользователя Steam, включая уровень, аватар, любимый значок и фон профиля.
+  version: 1.0.0
+paths:
+  /miniprofile/{profile_id}/json/:
+    get:
+      summary: Получить данные мини-профиля пользователя
+      description: Возвращает основную информацию о профиле пользователя Steam, такую как уровень, аватар, любимый значок и фон профиля.
+      parameters:
+        - name: profile_id
+          in: path
+          description: Уникальный идентификатор профиля пользователя Steam.
+          required: true
+          schema:
+            type: string
+            example: "1276937048"
+        - name: origin
+          in: query
+          description: Источник запроса (домен Steam).
+          required: true
+          schema:
+            type: string
+            example: "https://steamcommunity.com"
+      responses:
+        '200':
+          description: Успешное выполнение запроса.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  level:
+                    type: integer
+                    description: Уровень пользователя.
+                    example: 3
+                  level_class:
+                    type: string
+                    description: Класс CSS для отображения уровня.
+                    example: "friendPlayerLevel lvl_0"
+                  avatar_url:
+                    type: string
+                    description: URL аватара пользователя.
+                    example: "https://avatars.fastly.steamstatic.com/be5ed20c3ad7fb1dc1b8424a2479c3fa9ab6973f_full.jpg"
+                  persona_name:
+                    type: string
+                    description: Имя пользователя в Steam.
+                    example: "/"
+                  favorite_badge:
+                    type: object
+                    description: Информация о любимом значке пользователя.
+                    properties:
+                      name:
+                        type: string
+                        description: Название значка.
+                        example: "Столп сообщества"
+                      xp:
+                        type: string
+                        description: Количество опыта, которое даёт значок.
+                        example: "100"
+                      level:
+                        type: integer
+                        description: Уровень значка.
+                        example: 1
+                      description:
+                        type: string
+                        description: Описание значка.
+                        example: ""
+                      icon:
+                        type: string
+                        description: URL иконки значка.
+                        example: "https://community.fastly.steamstatic.com/public/images/badges/01_community/community02_80.png"
+                  profile_background:
+                    type: object
+                    description: Информация о фоновом видео профиля.
+                    properties:
+                      video/webm:
+                        type: string
+                        description: URL видео в формате WebM.
+                        example: "https://cdn.fastly.steamstatic.com/steamcommunity/public/images/items/2181930/736204152d6a1caf0fca1dbbeaf3db244d57dc42.webm"
+                      video/mp4:
+                        type: string
+                        description: URL видео в формате MP4.
+                        example: "https://cdn.fastly.steamstatic.com/steamcommunity/public/images/items/2181930/4467243d7468fef08e74ddf799dd0459ee749267.mp4"
+        '400':
+          description: Неправильные параметры запроса.
+        '404':
+          description: Профиль с указанным ID не найден.
+        '500':
+          description: Внутренняя ошибка сервера.
+
+servers:
+  - url: https://steamcommunity.com
+    description: Базовый URL Steam Community.

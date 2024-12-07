@@ -1,0 +1,97 @@
+openapi: 3.0.3
+info:
+  title: Steam Community API - Поиск сообществ
+  description: API для поиска сообществ (групп) в Steam по текстовому запросу.
+  version: 1.0.0
+paths:
+  /communitysearch:
+    get:
+      summary: Поиск сообществ Steam.
+      description: Выполняет поиск групп, соответствующих заданному тексту.
+      parameters:
+        - name: search_text
+          in: query
+          description: Текстовый запрос для поиска сообщества.
+          required: true
+          schema:
+            type: string
+            example: "uheggf"
+        - name: search_filter
+          in: query
+          description: Фильтр поиска (например, "groups").
+          required: false
+          schema:
+            type: string
+            enum: [groups]
+            example: "groups"
+        - name: search_page
+          in: query
+          description: Номер страницы результатов поиска.
+          required: false
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Успешное выполнение поиска.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: integer
+                    description: Успешность выполнения (1 = успех).
+                    example: 1
+                  search_text:
+                    type: string
+                    description: Текст поиска.
+                    example: "uheggf"
+                  search_result_count:
+                    type: integer
+                    description: Количество найденных сообществ.
+                    example: 1
+                  search_filter:
+                    type: string
+                    description: Используемый фильтр.
+                    example: "groups"
+                  search_page:
+                    type: integer
+                    description: Текущая страница результатов поиска.
+                    example: 1
+                  html:
+                    type: string
+                    description: HTML-код отображения результата.
+                    example: |
+                      <div id="community_searchresults_pagination" class="community_searchresults_container">
+                        <span class="community_searchresults_title">Группы</span>
+                        <span class="community_searchresults_paging">Показано 1–1 из 1</span>
+                        <div style="clear: both"></div>
+                      </div>
+                      <div class="search_row group">
+                        <div class="search_group_avatar_holder">
+                          <a href="https://steamcommunity.com/groups/kuren1e">
+                            <img src="https://avatars.fastly.steamstatic.com/dfc069f9dc4fbda36bb682d0586a7c4840caeb41_full.jpg">
+                          </a>
+                        </div>
+                        <div class="searchPersonaInfo">
+                          <div>
+                            <a class="searchPersonaName" href="https://steamcommunity.com/groups/kuren1e">Kessar Stream [YT]</a>
+                            <span class="search_group_type">- Открытая группа</span>
+                          </div>
+                          <div>Пользователей в этой группе: <span style="color: whitesmoke">157</span></div>
+                        </div>
+                        <div class="search_match_info">
+                          <div class="search_group_summary_text">
+                            Twitch https://www.twitch.tv/kuren1e
+                          </div>
+                        </div>
+                      </div>
+        '400':
+          description: Неправильные параметры запроса.
+        '500':
+          description: Ошибка сервера.
+
+servers:
+  - url: https://api.steampowered.com
+    description: Базовый URL API Steam для управления сообществами.

@@ -1,0 +1,101 @@
+openapi: 3.0.0
+info:
+  title: Steam Friendship Tokens List API
+  description: API для получения списка всех сгенерированных токенов дружбы.
+  version: 1.0.0
+paths:
+  /getFriendTokens:
+    get:
+      summary: Получить список всех токенов дружбы
+      description: Возвращает массив сгенерированных токенов дружбы, включая информацию о сроке действия и времени создания.
+      parameters:
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Уникальный идентификатор пользователя.
+      responses:
+        "200":
+          description: Успешный ответ с массивом токенов дружбы.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: integer
+                    enum: [1, 0]
+                    description: Указывает успешность операции. 1 — успешно, 0 — ошибка.
+                  tokens:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        invite_token:
+                          type: string
+                          description: Уникальный токен приглашения.
+                        invite_limit:
+                          type: string
+                          nullable: true
+                          description: Лимит использования токена (если применимо).
+                        invite_duration:
+                          type: string
+                          nullable: true
+                          description: Срок действия токена в секундах (если применимо).
+                        time_created:
+                          type: integer
+                          description: Время создания токена в формате UNIX.
+                        valid:
+                          type: integer
+                          enum: [1, 0]
+                          description: Указывает, действителен ли токен. 1 — да, 0 — нет.
+        "400":
+          description: Некорректный запрос.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: integer
+                    enum: [0]
+                  error:
+                    type: string
+                    description: Описание ошибки.
+        "500":
+          description: Ошибка сервера.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: integer
+                    enum: [0]
+                  error:
+                    type: string
+                    description: Описание ошибки сервера.
+components:
+  schemas:
+    Token:
+      type: object
+      properties:
+        invite_token:
+          type: string
+          description: Уникальный токен приглашения.
+        invite_limit:
+          type: string
+          nullable: true
+          description: Лимит использования токена (если применимо).
+        invite_duration:
+          type: string
+          nullable: true
+          description: Срок действия токена в секундах (если применимо).
+        time_created:
+          type: integer
+          description: Время создания токена в формате UNIX.
+        valid:
+          type: integer
+          enum: [1, 0]
+          description: Указывает, действителен ли токен. 1 — да, 0 — нет.

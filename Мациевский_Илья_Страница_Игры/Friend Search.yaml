@@ -1,0 +1,76 @@
+openapi: 3.0.3
+info:
+  title: Steam Friends API - Поиск пользователей
+  description: API для поиска пользователей Steam по имени.
+  version: 1.0.0
+paths:
+  /friendsearch:
+    get:
+      summary: Поиск пользователей Steam.
+      description: Выполняет поиск пользователей, соответствующих заданному тексту.
+      parameters:
+        - name: search_text
+          in: query
+          description: Имя пользователя или часть имени для поиска.
+          required: true
+          schema:
+            type: string
+            example: "ilyuha_mazi"
+        - name: search_filter
+          in: query
+          description: Фильтр поиска (например, только "пользователи").
+          required: false
+          schema:
+            type: string
+            enum: [users]
+            example: "users"
+        - name: search_page
+          in: query
+          description: Номер страницы результатов поиска.
+          required: false
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Успешное выполнение поиска.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: integer
+                    description: Успешность выполнения (1 = успех).
+                    example: 1
+                  search_text:
+                    type: string
+                    description: Текст поиска.
+                    example: "ilyuha_mazi"
+                  search_result_count:
+                    type: integer
+                    description: Количество найденных пользователей.
+                    example: 0
+                  search_filter:
+                    type: string
+                    description: Используемый фильтр.
+                    example: "users"
+                  search_page:
+                    type: integer
+                    description: Текущая страница результатов поиска.
+                    example: 1
+                  html:
+                    type: string
+                    description: HTML-код отображения результата.
+                    example: |
+                      <div class="search_results_error">
+                        <h2>Пользователи, соответствующие вашему запросу, не найдены.</h2>
+                      </div>
+        '400':
+          description: Неправильные параметры запроса.
+        '500':
+          description: Ошибка сервера.
+
+servers:
+  - url: https://api.steampowered.com
+    description: Базовый URL API Steam для управления друзьями.
